@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.backend.travel.dao.AccountMapper">
+
+    <resultMap id="BaseResultMap" type="com.backend.travel.POJO.entity.Account">
+            <id property="accountId" column="accountId" jdbcType="BIGINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
+            <result property="userPassword" column="userPassword" jdbcType="VARCHAR"/>
+            <result property="userPhoneNum" column="userPhoneNum" jdbcType="VARCHAR"/>
+            <result property="userEmail" column="userEmail" jdbcType="VARCHAR"/>
+            <result property="unionId" column="unionId" jdbcType="VARCHAR"/>
+            <result property="mpOpenId" column="mpOpenId" jdbcType="VARCHAR"/>
+            <result property="permissionId" column="permissionId" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        accountId,userId,userAccount,
+        userPassword,userPhoneNum,userEmail,
+        unionId,mpOpenId,permissionId
+    </sql>
+</mapper>
