@@ -6,7 +6,6 @@
 
     <resultMap id="BaseResultMap" type="com.backend.travel.POJO.entity.Account">
             <id property="accountId" column="accountId" jdbcType="BIGINT"/>
-            <result property="userId" column="userId" jdbcType="BIGINT"/>
             <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
             <result property="userPassword" column="userPassword" jdbcType="VARCHAR"/>
             <result property="userPhoneNum" column="userPhoneNum" jdbcType="VARCHAR"/>
@@ -14,11 +13,12 @@
             <result property="unionId" column="unionId" jdbcType="VARCHAR"/>
             <result property="mpOpenId" column="mpOpenId" jdbcType="VARCHAR"/>
             <result property="permissionId" column="permissionId" jdbcType="INTEGER"/>
+        <result property="accountStatus" column="accountStatus" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        accountId,userId,userAccount,
+        accountId,userAccount,
         userPassword,userPhoneNum,userEmail,
-        unionId,mpOpenId,permissionId
+        unionId,mpOpenId,permissionId,accountStatus
     </sql>
 </mapper>

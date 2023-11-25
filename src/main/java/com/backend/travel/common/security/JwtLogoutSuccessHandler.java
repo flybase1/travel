@@ -1,12 +1,11 @@
 package com.backend.travel.common.security;
 
 import cn.hutool.json.JSONUtil;
-import com.backend.travel.POJO.entity.Account;
 import com.backend.travel.common.ResultUtils;
 import com.backend.travel.utils.JWTUtils;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
@@ -18,20 +17,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
- * 登陆成功处理器
+ * 登出成功处理器
  */
 @Component
-public class LoginSuccessHandler implements AuthenticationSuccessHandler {
-
+public class JwtLogoutSuccessHandler implements LogoutSuccessHandler {
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         response.setContentType("application/json;charset=utf-8");
         ServletOutputStream outputStream = response.getOutputStream();
-        String userAccount = authentication.getName();
-        String token = JWTUtils.createJWT(userAccount);
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("authorization", token);
-        outputStream.write(JSONUtil.toJsonStr(ResultUtils.success(map)).getBytes(StandardCharsets.UTF_8));
+        outputStream.write(JSONUtil.toJsonStr(ResultUtils.success("退出成功")).getBytes(StandardCharsets.UTF_8));
         outputStream.flush();
         outputStream.close();
     }

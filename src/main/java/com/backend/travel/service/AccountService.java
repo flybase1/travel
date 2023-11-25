@@ -10,4 +10,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface AccountService extends IService<Account> {
 
+
+    Account getByUserName(String username);
+
+    String getUserAuthorityInfo(Long accountId);
 }

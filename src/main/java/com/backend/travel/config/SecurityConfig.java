@@ -1,8 +1,8 @@
 package com.backend.travel.config;
 
 
-import com.backend.travel.common.security.LoginFailureHandler;
-import com.backend.travel.common.security.LoginSuccessHandler;
+import com.backend.travel.common.security.*;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,22 +27,45 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] URL_WHITELIST = {
             "/api/login",
             "/test/test",
-            "/test/list",
+            "/test/noAuth/list",
             "/doc.html",
             "/doc.html/**",
             "/doc.html#/**",
             "/v2/**",
             "/webjars/**", "/swagger-resources/**", "/v3/api-docs/**",
     };
+    // 登陆成功
     @Resource
     private LoginSuccessHandler loginSuccessHandler;
+    // 登陆失败
     @Resource
     private LoginFailureHandler loginFailureHandler;
+    // 详细信息
+    @Resource
+    private MyUserDetailService myUserDetailService;
+    @Resource
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    // 登出配置
+    @Resource
+    private JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
+
+    // jwt过滤器
+    @Bean
+    JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        return new JwtAuthenticationFilter(authenticationManager());
+    }
+
+    // 加密方式
+    @Bean
+    BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        super.configure(auth);
+        auth.userDetailsService(myUserDetailService);
     }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -57,9 +81,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login")
                 .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler)
-//                .and()
-//                .logout()
-                //.logoutSuccessHandler()
+                .and()
+                .logout()
+                .logoutSuccessHandler(jwtLogoutSuccessHandler)
                 // session配置，无状态
                 .and()
                 .sessionManagement()
@@ -68,12 +92,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(URL_WHITELIST).permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
 
-        // 异常处理
-
-        // 自定义过滤
-
+                // 异常处理
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                // 自定义过滤
+                .and()
+                .addFilter(jwtAuthenticationFilter());
     }
 
 

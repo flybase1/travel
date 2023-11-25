@@ -3,10 +3,9 @@ package com.backend.travel.utils;
 
 import cn.hutool.core.codec.Base64;
 import com.backend.travel.common.CommonConstant;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.backend.travel.constant.CheckResult;
+import com.backend.travel.constant.JWTConstant;
+import io.jsonwebtoken.*;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
@@ -18,109 +17,99 @@ import java.util.Date;
 public class JWTUtils {
 
     /**
-     * 创建token
-     *
+     * 签发JWT;这里创建的jwt
      * @param id
-     * @param uname
-     * @param role
+     * @param subject   可以是JSON数据 尽可能少
+     * @param ttlMillis
      * @return
      */
-    public static String createToken(Long id, String uname, String role) {
-        String JwtToken = Jwts.builder()
-                .setHeaderParam("typ", "JWT")//请求头
-                .setHeaderParam("alg", "HS256")
-                .setSubject("medical-user")// 分类
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + CommonConstant.expireTime))
-                .claim("id", id)
-                .claim("uname", uname)
-                .claim("role", role)
-                .signWith(SignatureAlgorithm.HS256, CommonConstant.APP_SECRET)
-                .compact();
-        return JwtToken;
+    public static String createJWT(String id, String subject, long ttlMillis) {
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        long nowMillis = System.currentTimeMillis();
+        Date now = new Date(nowMillis);
+        SecretKey secretKey = generalKey();  // 通过操作加密生成key
+        JwtBuilder builder = Jwts.builder()
+                .setId(id)
+                .setSubject(subject)   // 主题
+                .setIssuer("fly")       // 签发者：fly
+                .setIssuedAt(now)      // 签发时间
+                .signWith(signatureAlgorithm, secretKey); // 签名算法以及密匙
+        if (ttlMillis >= 0) {
+            long expMillis = nowMillis + ttlMillis;
+            Date expDate = new Date(expMillis);
+            builder.setExpiration(expDate); // 过期时间
+        }
+        return builder.compact();
     }
 
     /**
-     * 获取token
+     * 生成jwt token
      *
-     * @param id
-     * @param userAccount
-     * @param role
+     * @param username
      * @return
      */
-    public static String getJwtToken(Long id, String userAccount, String role) {
-        return createToken(id, userAccount, role);
+    public static String createJWT(String username) {
+        return createJWT(username, username, 60 * 60 * 1000); // ttlMillis表示的是一小时
     }
 
     /**
-     * 生成加密的key
+     * 验证JWT
+     * 根据验证时抛出的超时异常、签名异常、其他异常进行一定的操作
+     *
+     * @param jwtStr
+     * @return
+     */
+    public static CheckResult validateJWT(String jwtStr) {
+        CheckResult checkResult = new CheckResult();
+        // 如果jwtStr为空的话，设置ErrCode为jwt不存在
+        if(StringUtils.isEmpty(jwtStr)){
+            checkResult.setSuccess(false);
+            checkResult.setErrCode(JWTConstant.JWT_ERRCODE_NULL);
+            return checkResult;
+        }
+        Claims claims = null;
+        try {
+            claims = parseJWT(jwtStr);
+            checkResult.setSuccess(true);
+            checkResult.setClaims(claims);
+        } catch (ExpiredJwtException e) {
+            checkResult.setErrCode(JWTConstant.JWT_ERRCODE_EXPIRE);
+            checkResult.setSuccess(false);
+        } catch (SignatureException e) {
+            checkResult.setErrCode(JWTConstant.JWT_ERRCODE_FAIL);
+            checkResult.setSuccess(false);
+        } catch (Exception e) {
+            checkResult.setErrCode(JWTConstant.JWT_ERRCODE_FAIL);
+            checkResult.setSuccess(false);
+        }
+        return checkResult;
+    }
+
+    /**
+     * 生成加密Key
      *
      * @return
      */
     public static SecretKey generalKey() {
-        byte[] decode = Base64.decode(CommonConstant.APP_SECRET);
-        SecretKeySpec keySpec = new SecretKeySpec(decode, 0, decode.length, "AES");
-        return keySpec;
+        byte[] encodedKey = Base64.decode(JWTConstant.JWT_SECRET);
+        SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
+        return key;
     }
 
+
     /**
-     * 解析jwt的字符串
+     * 解析JWT字符串
      *
-     * @param jsonWebToken
-     * @return
+     * @param jwt
+     * @return 返回 jwt 解析后的 payload
+     * @throws Exception
      */
-    public static Claims parseJWT(String jsonWebToken) {
+    public static Claims parseJWT(String jwt) {
         SecretKey secretKey = generalKey();
-        return Jwts
-                .parser()
+        return Jwts.parser()
                 .setSigningKey(secretKey)
-                .parseClaimsJws(jsonWebToken)
+                .parseClaimsJws(jwt)
                 .getBody();
     }
-
-
-    /**
-     * 判断token是否有效
-     *
-     * @param token
-     * @return
-     */
-    public static boolean checkToken(String token) {
-        if (!StringUtils.hasLength(token)) return false;
-        try {
-            Jwts.parser().setSigningKey(CommonConstant.APP_SECRET).parseClaimsJws(token);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean checkToken(HttpServletRequest request) {
-        try {
-            String token = request.getHeader("token");
-            if (!StringUtils.hasLength(token)) return false;
-            Jwts.parser().setSigningKey(CommonConstant.APP_SECRET).parseClaimsJws(token);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-
-    public static Claims getClaims(String token) {
-        if (!StringUtils.hasLength(token)) return null;
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(CommonConstant.APP_SECRET).parseClaimsJws(token);
-        Claims body = claimsJws.getBody();
-        return body;
-    }
-
-    // 根据token获取用户id
-    public static Integer getAccountIdByJwtToken(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if (!StringUtils.hasLength(token)) return null;
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(CommonConstant.APP_SECRET).parseClaimsJws(token);
-        Claims claims = claimsJws.getBody();
-        return (Integer) claims.get("id");
-    }
-
 
 }

@@ -4,26 +4,24 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
+
 import lombok.Data;
 
 /**
  * 账号表
+ *
  * @TableName account
  */
-@TableName(value ="account")
+@TableName( value = "account" )
 @Data
 public class Account implements Serializable {
     /**
      * 账号id
      */
-    @TableId(type = IdType.AUTO)
+    @TableId( type = IdType.AUTO )
     private Long accountId;
-
-    /**
-     * 用户id
-     */
-    private Long userId;
 
     /**
      * 用户账号
@@ -60,6 +58,11 @@ public class Account implements Serializable {
      */
     private Integer permissionId;
 
-    @TableField(exist = false)
+    /**
+     * 账号状态 0-正常 1-封禁
+     */
+    private Integer accountStatus;
+
+    @TableField( exist = false )
     private static final long serialVersionUID = 1L;
 }
