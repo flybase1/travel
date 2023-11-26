@@ -39,7 +39,6 @@ public class TestController {
         } else {
             return ResultUtils.error(ErrorCode.NO_AUTH_ERROR);
         }
-
     }
 
     @GetMapping( "/noAuth/list" )
