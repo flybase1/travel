@@ -1,9 +1,19 @@
 package com.backend.travel.service.impl;
 
+import java.util.Date;
+
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import com.backend.travel.POJO.DTO.AccountPageDto;
+import com.backend.travel.POJO.DTO.UserPageDto;
+import com.backend.travel.POJO.VO.AccountPageVo;
+import com.backend.travel.POJO.VO.UserPageVo;
 import com.backend.travel.POJO.entity.*;
+import com.backend.travel.common.CommonConstant;
 import com.backend.travel.dao.AccountMapper;
+import com.backend.travel.utils.SqlUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.backend.travel.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +42,8 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
     private SysRoleMenuServiceImpl sysRoleMenuService;
     @Resource
     private SysMenuServiceImpl sysMenuService;
+    @Resource
+    private UserServiceImpl userService;
 
     @Override
     public Account getByUserName(String userAccount) {
@@ -70,7 +82,9 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
                 SysMenu sysMenu = sysMenuService.getOne(new QueryWrapper<SysMenu>().eq("id", sysRoleMenu.getMenuId()));
                 log.info("perms:" + sysMenu.getPerms());
                 // 去重
-                menuCodeSet.add(sysMenu.getPerms());
+                if (sysMenu.getPerms() != null) {
+                    menuCodeSet.add(sysMenu.getPerms());
+                }
             });
         }
         if (menuCodeSet.size() > 0) {
@@ -83,6 +97,74 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
         log.info("authority:" + authority);
         return authority.toString();
     }
+
+    @Override
+    public Page<AccountPageVo> getAccountInfoPage(AccountPageDto accountPageDto) {
+        String queryAccount = accountPageDto.getQueryAccount();
+        String queryPhoneNum = accountPageDto.getQueryPhoneNum();
+        String queryEmail = accountPageDto.getQueryEmail();
+        Integer queryRoleId = accountPageDto.getQueryRoleId();
+        Integer queryStatus = accountPageDto.getQueryStatus();
+        long current = accountPageDto.getCurrent();
+        long pageSize = accountPageDto.getPageSize();
+        String sortField = accountPageDto.getSortField();
+        String sortOrder = accountPageDto.getSortOrder();
+
+        // 拼接查询条件
+        QueryWrapper<Account> queryWrapper = new QueryWrapper<>();
+        if (queryAccount != null) {
+            queryWrapper.like("userAccount", queryAccount);
+        }
+        if (queryPhoneNum != null) {
+            queryWrapper.like("userPhoneNum", queryPhoneNum);
+        }
+        if (queryEmail != null) {
+            queryWrapper.like("userEmail", queryEmail);
+        }
+        if (queryRoleId != null) {
+            queryWrapper.eq("permissionId", queryRoleId);
+        }
+        if (queryStatus != null) {
+            queryWrapper.eq("accountStatus", queryStatus);
+        }
+
+        // 排序
+        queryWrapper
+                .orderBy(SqlUtils.validSortField(sortField),
+                        sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
+                        sortField);
+        Page<Account> accountPage = this.page(new Page<>(current, pageSize), queryWrapper);
+        // 删除部分返回数据
+        List<Account> accountPageRecords = accountPage.getRecords();
+        List<AccountPageVo> accountPageVoList = accountPageRecords.stream().map(account -> {
+            AccountPageVo accountPageVo = new AccountPageVo();
+            BeanUtil.copyProperties(account, accountPageVo);
+            return accountPageVo;
+        }).collect(Collectors.toList());
+
+        accountPageVoList.forEach(accountPageVo -> {
+            Long accountId = accountPageVo.getAccountId();
+            List<SysAccountRole> accountRoleList = sysAccountRoleService.list(new QueryWrapper<SysAccountRole>().eq("accountId", accountId));
+            List<SysRole> roleList = accountRoleList.stream().map(accountRole -> {
+                Integer roleId = accountRole.getRoleId();
+                SysRole sysRole = sysRoleService.getOne(new QueryWrapper<SysRole>().eq("roleId", roleId));
+                return sysRole;
+            }).collect(Collectors.toList());
+            accountPageVo.setRoleList(roleList);
+        });
+
+        // 新page
+        Page<AccountPageVo> pageVoPage = new Page<>();
+        pageVoPage.setRecords(accountPageVoList);
+        pageVoPage.setPages(accountPage.getPages());
+        pageVoPage.setCurrent(accountPage.getCurrent());
+        pageVoPage.setTotal(accountPage.getTotal());
+        pageVoPage.setSize(accountPage.getSize());
+
+
+        return pageVoPage;
+    }
+
 }
 
 

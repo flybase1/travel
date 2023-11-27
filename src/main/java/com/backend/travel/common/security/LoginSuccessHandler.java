@@ -1,6 +1,9 @@
 package com.backend.travel.common.security;
 
+import java.util.Date;
+
 import cn.hutool.json.JSONUtil;
+import com.backend.travel.POJO.VO.UserVo;
 import com.backend.travel.POJO.entity.*;
 import com.backend.travel.common.ResultUtils;
 import com.backend.travel.service.impl.*;
@@ -49,6 +52,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         User user = userService.getOne(new QueryWrapper<User>().eq("accountId", accountId));
 
         Integer roleId = account.getPermissionId();
+        SysRole role = sysRoleService.getOne(new QueryWrapper<SysRole>().eq("roleId", roleId));
         // 1. 查找权限对应的菜单列表
         List<SysRoleMenu> roleMenuList = sysRoleMenuService.list(new QueryWrapper<SysRoleMenu>().eq("roleId", roleId));
         // 2. 菜单列表查询所有相关信息
@@ -62,40 +66,27 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         arrayList.sort(Comparator.comparing(SysMenu::getOrderNum, Comparator.nullsLast(Comparator.naturalOrder())));
         // 转成菜单树
         List<SysMenu> menuList = sysMenuService.buildTree(arrayList);
-        // 3.
-
-//        QueryWrapper<SysAccountRole> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("accountId", accountId);
-//        List<SysAccountRole> sysAccountRoleList = sysAccountRoleService.list(queryWrapper);
-//        // 1.2 匹配当前账号所有的权限信息
-//        List<SysRole> sysRoleList = sysAccountRoleList.stream().map(sysAccountRole -> {
-//            Integer roleId = sysAccountRole.getRoleId();
-//            return sysRoleService.getOne(new QueryWrapper<SysRole>().eq("roleId", roleId));
-//        }).collect(Collectors.toList());
-//        // 2. 遍历所有角色，获取所有的菜单权限,不重复
-//        Set<SysMenu> menuCodeSet = new HashSet<>();
-//        for (SysRole sysRole : sysRoleList) {
-//            // 遍历角色菜单表，找到所有对应的菜单id
-//            List<SysRoleMenu> sysRoleMenus = sysRoleMenuService.list(new QueryWrapper<SysRoleMenu>().eq("roleId", sysRole.getRoleId()));
-//            // 遍历所有菜单id，找到所有对应的菜单信息
-//            sysRoleMenus.forEach(sysRoleMenu -> {
-//                SysMenu sysMenu = sysMenuService.getOne(new QueryWrapper<SysMenu>().eq("id", sysRoleMenu.getMenuId()));
-//                // 去重
-//                menuCodeSet.add(sysMenu);
-//            });
-//        }
-//        ArrayList<SysMenu> arrayList = new ArrayList<SysMenu>(menuCodeSet);
-//        // 排序
-//        arrayList.sort(Comparator.comparing(SysMenu::getOrderNum, Comparator.nullsLast(Comparator.naturalOrder())));
-//        // 转成菜单树
-//        List<SysMenu> menuList = sysMenuService.buildTree(arrayList);
-
+        // 3.包装返回用户信息
+        UserVo userVo = new UserVo();
+        userVo.setAccountId(accountId);
+        userVo.setUserId(userVo.getUserId());
+        userVo.setUsername(user.getUsername());
+        userVo.setUserAvatar(user.getUserAvatar());
+        userVo.setUserPhoneNum(account.getUserPhoneNum());
+        userVo.setUserEmail(account.getUserEmail());
+        userVo.setUserRole(role.getRoleName());
+        userVo.setCreateTime(user.getCreateTime());
+        userVo.setUserStatus(user.getUserStatus());
+        userVo.setDescription(user.getUserProfile());
+        userVo.setUserRegion(user.getUserRegion());
+        userVo.setUserGender(user.getUserGender());
+        userVo.setUserAccount(account.getUserAccount());
         String token = JWTUtils.createJWT(userAccount);
         HashMap<String, Object> map = new HashMap<>();
         map.put("authorization", token);
-        map.put("account", account);
+//        map.put("account", account);
         map.put("menuList", menuList);
-        map.put("user", user);
+        map.put("user", userVo);
         // todo 返回权限信息
         outputStream.write(JSONUtil.toJsonStr(ResultUtils.success(map)).getBytes(StandardCharsets.UTF_8));
         outputStream.flush();

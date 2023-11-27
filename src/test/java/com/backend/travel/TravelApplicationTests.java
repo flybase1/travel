@@ -13,12 +13,18 @@ import javax.annotation.Resource;
 class TravelApplicationTests {
     @Resource
     private AccountService accountService;
+    @Resource
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Test
     void contextLoads() {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String encode = bCryptPasswordEncoder.encode("123456");
-        System.out.println(encode);
+//        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+//        String encode = bCryptPasswordEncoder.encode("123456");
+//        System.out.println(encode);
+        String pwd = "$2a$10$8IthMjNdrXU8.JjcTR1F6uuDVDV.yaus2Hnhr8qyrd1QVKjvNRsom";
+        boolean matches = bCryptPasswordEncoder.matches("222222", pwd);
+        System.out.println(matches);
+
     }
 
     @Test
