@@ -1,4 +1,4 @@
-package com.backend.travel.POJO.DTO;
+package com.backend.travel.POJO.DTO.AccountDto;
 
 import com.backend.travel.common.PageRequest;
 import lombok.Data;

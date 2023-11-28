@@ -68,11 +68,11 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         if (!checkResult.isSuccess()) {
             switch (checkResult.getErrCode()) {
                 case JWTConstant.JWT_ERRCODE_NULL:
-                    throw new JwtException("Token 不存在");
+                    throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR, "Token 不存在");
                 case JWTConstant.JWT_ERRCODE_EXPIRE:
-                    throw new JwtException("Token 已过期");
+                    throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR, "Token 已过期");
                 case JWTConstant.JWT_ERRCODE_FAIL:
-                    throw new JwtException("Token 认证失败");
+                    throw new BusinessException(ErrorCode.SYSTEM_ERROR, "Token 认证失败");
             }
         }
         // 解析jwt去获取用户名
@@ -83,7 +83,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
         Account account = accountService.getByUserName(userAccount);
         List<GrantedAuthority> userAuthority = myUserDetailService.getUserAuthority(account.getAccountId());
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userAccount, null,userAuthority );
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userAccount, null, userAuthority);
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         chain.doFilter(request, response);
     }

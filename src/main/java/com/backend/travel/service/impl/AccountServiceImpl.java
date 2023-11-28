@@ -1,25 +1,30 @@
 package com.backend.travel.service.impl;
 
-import java.util.Date;
-
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import com.backend.travel.POJO.DTO.AccountPageDto;
-import com.backend.travel.POJO.DTO.UserPageDto;
+import com.backend.travel.POJO.DTO.AccountDto.AccountInfoVo;
+import com.backend.travel.POJO.DTO.AccountDto.AccountPageDto;
+import com.backend.travel.POJO.DTO.AccountDto.AccountSaveDto;
+import com.backend.travel.POJO.DTO.AccountDto.AccountUpdateDto;
 import com.backend.travel.POJO.VO.AccountPageVo;
-import com.backend.travel.POJO.VO.UserPageVo;
 import com.backend.travel.POJO.entity.*;
 import com.backend.travel.common.CommonConstant;
+import com.backend.travel.common.ErrorCode;
 import com.backend.travel.dao.AccountMapper;
+import com.backend.travel.execption.BusinessException;
+import com.backend.travel.key.DefaultKey;
 import com.backend.travel.utils.SqlUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.backend.travel.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +49,8 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
     private SysMenuServiceImpl sysMenuService;
     @Resource
     private UserServiceImpl userService;
+    @Resource
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public Account getByUserName(String userAccount) {
@@ -161,8 +168,103 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
         pageVoPage.setTotal(accountPage.getTotal());
         pageVoPage.setSize(accountPage.getSize());
 
-
         return pageVoPage;
+    }
+
+    @Override
+    public Boolean saveAccount(AccountSaveDto accountSaveDto) {
+        String userAccount = accountSaveDto.getUserAccount();
+        String userPassword = accountSaveDto.getUserPassword();
+        String userPhoneNum = accountSaveDto.getUserPhoneNum();
+        String userEmail = accountSaveDto.getUserEmail();
+
+        if (StrUtil.isBlank(userAccount) && StrUtil.isBlank(userPhoneNum)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "数据不能为空");
+        }
+        if (userPassword == null) {
+            userPassword = "123456";
+        }
+        Account checkAccountExist = this.getOne(new QueryWrapper<Account>().eq("userAccount", userAccount));
+        if (checkAccountExist != null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号名已存在");
+        }
+
+        // 加密
+        String encodePwd = bCryptPasswordEncoder.encode(userPassword);
+        Account account = new Account();
+        BeanUtil.copyProperties(accountSaveDto, account);
+        account.setUserPassword(encodePwd);
+        boolean save = this.save(account);
+        return save;
+    }
+
+    @Override
+    public Boolean updateAccount(AccountUpdateDto accountUpdateDto) {
+        String userAccount = accountUpdateDto.getUserAccount();
+        String userPhoneNum = accountUpdateDto.getUserPhoneNum();
+        String userEmail = accountUpdateDto.getUserEmail();
+        Integer accountStatus = accountUpdateDto.getAccountStatus();
+        if (StrUtil.isBlank(userAccount) && StrUtil.isBlank(userPhoneNum)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "数据不能为空");
+        }
+        Account account = new Account();
+        BeanUtil.copyProperties(accountUpdateDto, account);
+        boolean updateSuccess = this.updateById(account);
+        return updateSuccess;
+    }
+
+    @Override
+    public AccountInfoVo getAccountInfo(Long accountId) {
+        Account account = this.getOne(new QueryWrapper<Account>().eq("accountId", accountId));
+        if (account == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在");
+        }
+        AccountInfoVo accountInfoVo = new AccountInfoVo();
+        BeanUtil.copyProperties(account, accountInfoVo);
+        return accountInfoVo;
+    }
+
+    @Override
+    @Transactional
+    public Boolean deleteAccountById(Long accountId) {
+        if (accountId == null || accountId < 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+        }
+        boolean deleteSuccess = this.removeById(accountId);
+        if (deleteSuccess) {
+            boolean remove = sysAccountRoleService.remove(new QueryWrapper<SysAccountRole>().eq("accountId", accountId));
+            if (remove) {
+                return userService.removeById(new QueryWrapper<User>().eq("accountId", accountId));
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public Boolean deleteAccountByIds(Long[] accountIds) {
+        boolean b = this.removeBatchByIds(Arrays.asList(accountIds));
+        if (b) {
+            boolean removeAccountRole = sysAccountRoleService.remove(new QueryWrapper<SysAccountRole>().in("accountId", accountIds));
+            if (removeAccountRole) {
+                boolean removeUserByIds = userService.removeById(new QueryWrapper<User>().in("accountId", accountIds));
+                return removeUserByIds;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Boolean resetAccountPwd(Long accountId) {
+        Account account = this.getOne(new QueryWrapper<Account>().eq("accountId", accountId));
+        String encode = bCryptPasswordEncoder.encode(DefaultKey.DEFAULT_PASSWORD);
+        account.setUserPassword(encode);
+        boolean b = this.updateById(account);
+        return b;
     }
 
 }

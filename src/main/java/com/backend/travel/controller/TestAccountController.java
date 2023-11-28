@@ -1,6 +1,6 @@
 package com.backend.travel.controller;
 
-import com.backend.travel.POJO.DTO.ResetAccountPwd;
+import com.backend.travel.POJO.DTO.AccountDto.ResetAccountPwd;
 import com.backend.travel.POJO.entity.Account;
 import com.backend.travel.common.BaseResponse;
 import com.backend.travel.common.ErrorCode;

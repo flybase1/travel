@@ -21,8 +21,8 @@ class TravelApplicationTests {
 //        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 //        String encode = bCryptPasswordEncoder.encode("123456");
 //        System.out.println(encode);
-        String pwd = "$2a$10$8IthMjNdrXU8.JjcTR1F6uuDVDV.yaus2Hnhr8qyrd1QVKjvNRsom";
-        boolean matches = bCryptPasswordEncoder.matches("222222", pwd);
+        String pwd = "$2a$10$e0FH1ZCODVFUBBodZLTprO/o5krjP4sifR8Rcz1HGgP4c.CgAvQ4q";
+        boolean matches = bCryptPasswordEncoder.matches("123456", pwd);
         System.out.println(matches);
 
     }

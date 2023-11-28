@@ -1,14 +1,13 @@
 package com.backend.travel.service;
 
-import com.backend.travel.POJO.DTO.AccountPageDto;
-import com.backend.travel.POJO.DTO.UserPageDto;
+import com.backend.travel.POJO.DTO.AccountDto.AccountInfoVo;
+import com.backend.travel.POJO.DTO.AccountDto.AccountPageDto;
+import com.backend.travel.POJO.DTO.AccountDto.AccountSaveDto;
+import com.backend.travel.POJO.DTO.AccountDto.AccountUpdateDto;
 import com.backend.travel.POJO.VO.AccountPageVo;
-import com.backend.travel.POJO.VO.UserPageVo;
 import com.backend.travel.POJO.entity.Account;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
 
 /**
  * @author admin
@@ -40,4 +39,46 @@ public interface AccountService extends IService<Account> {
      * @return
      */
     Page<AccountPageVo> getAccountInfoPage(AccountPageDto accountPageDto);
+
+    /**
+     * 新建账号
+     * @param accountSaveDto
+     * @return
+     */
+    Boolean saveAccount(AccountSaveDto accountSaveDto);
+
+    /**
+     * 账号信息修改
+     * @param accountUpdateDto
+     * @return
+     */
+    Boolean updateAccount(AccountUpdateDto accountUpdateDto);
+
+    /**
+     * 根据账号id获取账号信息
+     * @param accountId
+     * @return
+     */
+    AccountInfoVo getAccountInfo(Long accountId);
+
+    /**
+     * 根据id删除账号信息
+     * @param accountId
+     * @return
+     */
+    Boolean deleteAccountById(Long accountId);
+
+    /**
+     * 批量删除
+     * @param accountIds
+     * @return
+     */
+    Boolean deleteAccountByIds(Long[] accountIds);
+
+    /**
+     * 重置密码
+     * @param accountId
+     * @return
+     */
+    Boolean resetAccountPwd(Long accountId);
 }

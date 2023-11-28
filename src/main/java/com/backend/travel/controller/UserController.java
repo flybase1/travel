@@ -9,6 +9,5 @@ import javax.annotation.Resource;
 @RequestMapping( "/user" )
 @RestController
 public class UserController {
-    @Resource
-    private UserServiceImpl userService;
+
 }
