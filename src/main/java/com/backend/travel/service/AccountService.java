@@ -81,4 +81,12 @@ public interface AccountService extends IService<Account> {
      * @return
      */
     Boolean resetAccountPwd(Long accountId);
+
+    /**
+     * 授予权限
+     * @param accountId
+     * @param roleIds
+     * @return
+     */
+    Boolean grantRole(Long accountId, Integer[] roleIds);
 }

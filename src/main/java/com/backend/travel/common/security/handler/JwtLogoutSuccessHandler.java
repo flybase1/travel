@@ -1,4 +1,4 @@
-package com.backend.travel.common.security;
+package com.backend.travel.common.security.handler;
 
 import cn.hutool.json.JSONUtil;
 import com.backend.travel.common.ResultUtils;

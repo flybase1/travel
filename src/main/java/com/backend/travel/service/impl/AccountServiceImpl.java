@@ -24,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -182,7 +179,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "数据不能为空");
         }
         if (userPassword == null) {
-            userPassword = "123456";
+            userPassword = DefaultKey.DEFAULT_PASSWORD;
         }
         Account checkAccountExist = this.getOne(new QueryWrapper<Account>().eq("userAccount", userAccount));
         if (checkAccountExist != null) {
@@ -195,7 +192,21 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
         BeanUtil.copyProperties(accountSaveDto, account);
         account.setUserPassword(encodePwd);
         boolean save = this.save(account);
-        return save;
+
+        // 创建用户信息，联系account表
+        User user = new User();
+        user.setUsername(account.getUserAccount());
+        user.setAccountId(account.getAccountId());
+        userService.save(user);
+
+        // 建立账号,默认都是用户权限
+        SysAccountRole sysAccountRole = new SysAccountRole();
+        sysAccountRole.setAccountId(account.getAccountId());
+        // todo 枚举类型
+        sysAccountRole.setRoleId(2);
+        sysAccountRoleService.save(sysAccountRole);
+
+        return true;
     }
 
     @Override
@@ -249,7 +260,10 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
         if (b) {
             boolean removeAccountRole = sysAccountRoleService.remove(new QueryWrapper<SysAccountRole>().in("accountId", accountIds));
             if (removeAccountRole) {
-                boolean removeUserByIds = userService.removeById(new QueryWrapper<User>().in("accountId", accountIds));
+                QueryWrapper<User> userQueryWrapper = new QueryWrapper<User>().in("accountId", accountIds);
+                List<User> list = userService.list(userQueryWrapper);
+                List<Long> userIdList = list.stream().map(user -> user.getUserId()).collect(Collectors.toList());
+                boolean removeUserByIds = userService.removeByIds(userIdList);
                 return removeUserByIds;
             } else {
                 return false;
@@ -264,6 +278,29 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
         String encode = bCryptPasswordEncoder.encode(DefaultKey.DEFAULT_PASSWORD);
         account.setUserPassword(encode);
         boolean b = this.updateById(account);
+        return b;
+    }
+
+    @Override
+    @Transactional
+    public Boolean grantRole(Long accountId, Integer[] roleIds) {
+        List<SysAccountRole> sysAccountRoleList = new ArrayList<>();
+        // 遍历传递过来的roleIds，然后分别赋值，添加至集合列表
+        Arrays.stream(roleIds).forEach(roleId -> {
+            SysAccountRole sysAccountRole = new SysAccountRole();
+            sysAccountRole.setRoleId(roleId);
+            sysAccountRole.setAccountId(accountId);
+            sysAccountRoleList.add(sysAccountRole);
+        });
+
+        // 1. 删除原有的账号与角色的联系
+        List<SysAccountRole> accountRoleList = sysAccountRoleService.list(new QueryWrapper<SysAccountRole>().eq("accountId", accountId));
+        // todo 由于account和accountRole没有建立外键联系，所以这边需要手动判断，不然没有数据删除，就会回滚
+        if (!accountRoleList.isEmpty()) {
+            sysAccountRoleService.remove(new QueryWrapper<SysAccountRole>().eq("accountId", accountId));
+        }
+        // 2. 添加新的账号与角色的联系，批量操作
+        boolean b = sysAccountRoleService.saveBatch(sysAccountRoleList);
         return b;
     }
 

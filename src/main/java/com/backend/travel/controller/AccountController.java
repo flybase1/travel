@@ -11,6 +11,7 @@ import com.backend.travel.common.ResultUtils;
 import com.backend.travel.service.impl.AccountServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,6 +108,7 @@ public class AccountController {
      * @return
      */
     @GetMapping( "/resetPwd" )
+    @PreAuthorize( "hasAuthority('system:user:role') " )
     public BaseResponse<Boolean> resetPwd(@RequestParam Long accountId) {
         Boolean resetSuccess = accountService.resetAccountPwd(accountId);
         return ResultUtils.success(resetSuccess);
@@ -120,6 +122,7 @@ public class AccountController {
      * @return
      */
     @GetMapping( "/updateStatus/{accountId}/status/{accountStatus}" )
+    @PreAuthorize( "hasAuthority('system:user:role') " )
     public BaseResponse<Boolean> updateAccountStatus(
             @PathVariable( value = "accountId" ) Long accountId,
             @PathVariable( value = "accountStatus" ) Integer accountStatus) {
@@ -127,5 +130,19 @@ public class AccountController {
         account.setAccountStatus(accountStatus);
         boolean b = accountService.updateById(account);
         return ResultUtils.success(b);
+    }
+
+    /**
+     * 根据账号id更新用户权限
+     *
+     * @param accountId
+     * @param roleIds
+     * @return
+     */
+    @PostMapping( "/grantRole/{accountId}" )
+    @PreAuthorize( "hasAuthority('system:user:role') " )
+    public BaseResponse<Boolean> grantRole(@PathVariable( "accountId" ) Long accountId, @RequestBody Integer[] roleIds) {
+        Boolean success = accountService.grantRole(accountId, roleIds);
+        return ResultUtils.success(success);
     }
 }
