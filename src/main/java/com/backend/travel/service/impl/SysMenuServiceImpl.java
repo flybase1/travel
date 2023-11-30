@@ -3,6 +3,8 @@ package com.backend.travel.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.backend.travel.POJO.DTO.SysMenuDto.SysMenuAddDto;
 import com.backend.travel.POJO.DTO.SysMenuDto.SysMenuUpdateDto;
+import com.backend.travel.POJO.entity.SysAccountRole;
+import com.backend.travel.POJO.entity.SysRoleMenu;
 import com.backend.travel.common.ErrorCode;
 import com.backend.travel.execption.BusinessException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -11,11 +13,14 @@ import com.backend.travel.POJO.entity.SysMenu;
 import com.backend.travel.service.SysMenuService;
 import com.backend.travel.dao.SysMenuMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author admin
@@ -25,6 +30,8 @@ import java.util.List;
 @Service
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         implements SysMenuService {
+    @Resource
+    private SysRoleMenuServiceImpl sysRoleMenuService;
 
     @Override
     public List<SysMenu> buildTree(List<SysMenu> arrayList) {
@@ -99,6 +106,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
+    @Transactional
     public Boolean deleteMenu(Long menuId) {
         // 如果有父节点，需要先删除子节点,计算当前数据里面是否有对应的父节点
         long countParent = this.count(new QueryWrapper<SysMenu>().eq("parentId", menuId));
@@ -108,6 +116,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         boolean b = this.removeById(menuId);
         if (!b) {
             throw new BusinessException(ErrorCode.DATA_DELETE_ERROR);
+        }
+        List<SysRoleMenu> sysRoleMenuList = sysRoleMenuService.list(new QueryWrapper<SysRoleMenu>().eq("menuId", menuId));
+        if (sysRoleMenuList.size() > 0) {
+            List<Long> sysAccountRoleIds = sysRoleMenuList.stream().map(sysAccountRole -> sysAccountRole.getId()).collect(Collectors.toList());
+            boolean removeBatchByIds = sysRoleMenuService.removeBatchByIds(sysAccountRoleIds);
+            if (!removeBatchByIds) {
+                throw new BusinessException(ErrorCode.DATA_DELETE_ERROR, "删除权限-菜单关系失败");
+            }
         }
         return true;
     }

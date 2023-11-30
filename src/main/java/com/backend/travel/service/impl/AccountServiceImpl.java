@@ -48,6 +48,8 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
     private UserServiceImpl userService;
     @Resource
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Resource
+    private GuideServiceImpl guideService;
 
     @Override
     public Account getByUserName(String userAccount) {
@@ -301,6 +303,20 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
         }
         // 2. 添加新的账号与角色的联系，批量操作
         boolean b = sysAccountRoleService.saveBatch(sysAccountRoleList);
+        // todo 如果里面包含了导游id，也就是3，那么就需要关联导游信息
+        User user = userService.getOne(new QueryWrapper<User>().eq("accountId", accountId));
+        Long userId = user.getUserId();
+        List<Integer> roleIdList = Arrays.stream(roleIds).collect(Collectors.toList());
+        // todo 枚举值3--》导游
+        if (roleIdList.contains(3)) {
+            Guide guide = new Guide();
+            guide.setUserId(userId);
+            boolean save = guideService.save(guide);
+            if (!save) {
+                throw new BusinessException(ErrorCode.DATA_INSERT_ERROR, "建立导游关系失败");
+            }
+        }
+
         return b;
     }
 

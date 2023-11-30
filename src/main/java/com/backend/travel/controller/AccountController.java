@@ -42,7 +42,7 @@ public class AccountController {
      * @return
      */
     @PostMapping( "/saveAccount" )
-    @PreAuthorize( "hasAuthority('system:user:edit') " + " ||" + "hasAnyAuthority('system:user:add')" )
+    @PreAuthorize( "hasAuthority('system:account:edit') " + " ||" + "hasAnyAuthority('system:account:add')" )
     public BaseResponse<Boolean> saveAccount(@RequestBody AccountSaveDto accountSaveDto) {
         Boolean saveSuccess = accountService.saveAccount(accountSaveDto);
         return ResultUtils.success(saveSuccess);
@@ -55,7 +55,7 @@ public class AccountController {
      * @return
      */
     @PutMapping( "/updateAccount" )
-    @PreAuthorize( "hasAuthority('system:user:edit') " + " ||" + "hasAnyAuthority('system:user:update')" )
+    @PreAuthorize( "hasAuthority('system:account:edit') " + " ||" + "hasAnyAuthority('system:account:update')" )
     public BaseResponse<Boolean> updateAccount(@RequestBody AccountUpdateDto accountUpdateDto) {
         Boolean updateSuccess = accountService.updateAccount(accountUpdateDto);
         return ResultUtils.success(updateSuccess);
@@ -68,7 +68,7 @@ public class AccountController {
      * @return
      */
     @GetMapping( "/getAccountInfo" )
-    @PreAuthorize( "hasAuthority('system:user:query') " )
+    @PreAuthorize( "hasAuthority('system:account:query') " )
     public BaseResponse<AccountInfoVo> getAccountInfo(@RequestParam Long accountId) {
         AccountInfoVo accountInfoVo = accountService.getAccountInfo(accountId);
         return ResultUtils.success(accountInfoVo);
@@ -82,7 +82,7 @@ public class AccountController {
      * @return
      */
     @DeleteMapping( "/deleteAccount" )
-    @PreAuthorize( "hasAuthority('system:user:delete') " )
+    @PreAuthorize( "hasAuthority('system:account:delete') " )
     public BaseResponse<Boolean> deleteAccount(@RequestParam Long accountId) {
         Boolean deleteSuccess = accountService.deleteAccountById(accountId);
         return ResultUtils.success(deleteSuccess);
@@ -95,7 +95,7 @@ public class AccountController {
      * @return
      */
     @DeleteMapping( "/delete/AccountList" )
-    @PreAuthorize( "hasAuthority('system:user:delete') " )
+    @PreAuthorize( "hasAuthority('system:account:delete') " )
     public BaseResponse<Boolean> deleteAccountList(@RequestBody Long[] accountIds) {
         Boolean deleteSuccess = accountService.deleteAccountByIds(accountIds);
         return ResultUtils.success(deleteSuccess);
@@ -108,7 +108,7 @@ public class AccountController {
      * @return
      */
     @GetMapping( "/resetPwd" )
-    @PreAuthorize( "hasAuthority('system:user:role') " )
+    @PreAuthorize( "hasAuthority('system:account:role') " )
     public BaseResponse<Boolean> resetPwd(@RequestParam Long accountId) {
         Boolean resetSuccess = accountService.resetAccountPwd(accountId);
         return ResultUtils.success(resetSuccess);
@@ -122,7 +122,7 @@ public class AccountController {
      * @return
      */
     @GetMapping( "/updateStatus/{accountId}/status/{accountStatus}" )
-    @PreAuthorize( "hasAuthority('system:user:role') " )
+    @PreAuthorize( "hasAuthority('system:account:role') " )
     public BaseResponse<Boolean> updateAccountStatus(
             @PathVariable( value = "accountId" ) Long accountId,
             @PathVariable( value = "accountStatus" ) Integer accountStatus) {
@@ -140,7 +140,7 @@ public class AccountController {
      * @return
      */
     @PostMapping( "/grantRole/{accountId}" )
-    @PreAuthorize( "hasAuthority('system:user:role') " )
+    @PreAuthorize( "hasAuthority('system:account:role') " )
     public BaseResponse<Boolean> grantRole(@PathVariable( "accountId" ) Long accountId, @RequestBody Integer[] roleIds) {
         Boolean success = accountService.grantRole(accountId, roleIds);
         return ResultUtils.success(success);
