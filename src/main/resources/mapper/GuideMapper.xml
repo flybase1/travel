@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.backend.travel.dao.GuideMapper">
+
+    <resultMap id="BaseResultMap" type="com.backend.travel.POJO.entity.Guide">
+        <id property="guideId" column="guideId" jdbcType="BIGINT"/>
+        <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="guideCertificate" column="guideCertificate" jdbcType="VARCHAR"/>
+        <result property="approvalStatus" column="approvalStatus" jdbcType="TINYINT"/>
+        <result property="approvalResult" column="approvalResult" jdbcType="VARCHAR"/>
+        <result property="score" column="score" jdbcType="DOUBLE"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        guideId,userId,guideCertificate,approvalResult,
+        approvalStatus,score,createTime
+    </sql>
+</mapper>
