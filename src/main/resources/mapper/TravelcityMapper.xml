@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.backend.travel.dao.TravelcityMapper">
+
+    <resultMap id="BaseResultMap" type="com.backend.travel.POJO.entity.Travelcity">
+            <id property="cityId" column="cityId" jdbcType="INTEGER"/>
+            <result property="cityName" column="cityName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        cityId,cityName
+    </sql>
+</mapper>

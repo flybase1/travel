@@ -8,6 +8,8 @@ import com.backend.travel.POJO.VO.order.OrderPageVo;
 import com.backend.travel.POJO.VO.order.OrderVo;
 import com.backend.travel.POJO.entity.Orderstatus;
 import com.backend.travel.common.CommonConstant;
+import com.backend.travel.common.ErrorCode;
+import com.backend.travel.execption.BusinessException;
 import com.backend.travel.utils.SqlUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,6 +20,7 @@ import com.backend.travel.dao.OrdersnMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,27 +83,51 @@ public class OrdersnServiceImpl extends ServiceImpl<OrdersnMapper, Ordersn>
 
     @Override
     public OrderVo getOrderInfo(Long orderId) {
-        return null;
+        Ordersn ordersn = this.getOne(new QueryWrapper<Ordersn>().eq("orderId", orderId));
+        OrderVo orderVo = new OrderVo();
+        BeanUtil.copyProperties(ordersn, orderVo);
+        return orderVo;
     }
 
     @Override
     public Boolean saveOrder(OrderSaveDto orderSaveDto) {
-        return null;
+        Ordersn ordersn = new Ordersn();
+        BeanUtil.copyProperties(orderSaveDto, ordersn);
+        boolean save = this.save(ordersn);
+        if (!save) {
+            throw new BusinessException(ErrorCode.DATA_INSERT_ERROR);
+        }
+        return true;
     }
 
     @Override
     public Boolean updateOrder(OrderUpdateDto orderUpdateDto) {
-        return null;
+        Ordersn ordersn = new Ordersn();
+        BeanUtil.copyProperties(orderUpdateDto, ordersn);
+        boolean b = this.updateById(ordersn);
+        if (!b) {
+            throw new BusinessException(ErrorCode.DATA_UPDATE_ERROR);
+        }
+        return true;
     }
 
     @Override
     public Boolean deleteOrderById(Long orderId) {
-        return null;
+        boolean orderId1 = this.remove(new QueryWrapper<Ordersn>().eq("orderId", orderId));
+        if (!orderId1) {
+            throw new BusinessException(ErrorCode.DATA_DELETE_ERROR);
+        }
+        return true;
     }
 
     @Override
     public Boolean deleteBathOrderByIds(Long[] orderIds) {
-        return null;
+        List<Long> list = Arrays.stream(orderIds).collect(Collectors.toList());
+        boolean b = this.removeBatchByIds(list);
+        if (!b) {
+            throw new BusinessException(ErrorCode.DATA_DELETE_ERROR);
+        }
+        return true;
     }
 }
 
