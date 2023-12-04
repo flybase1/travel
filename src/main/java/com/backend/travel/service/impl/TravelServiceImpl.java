@@ -1,15 +1,20 @@
 package com.backend.travel.service.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.backend.travel.POJO.DTO.Travel.TravelAddDto;
 import com.backend.travel.POJO.DTO.Travel.TravelPageDto;
+import com.backend.travel.POJO.DTO.Travel.TravelUpdateDto;
 import com.backend.travel.POJO.VO.travel.TravelPageVo;
 import com.backend.travel.POJO.VO.travel.TravelVo;
 import com.backend.travel.POJO.entity.*;
 import com.backend.travel.common.CommonConstant;
+import com.backend.travel.common.ErrorCode;
+import com.backend.travel.execption.BusinessException;
 import com.backend.travel.utils.SqlUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -121,6 +126,71 @@ public class TravelServiceImpl extends ServiceImpl<TravelMapper, Travel>
         travelVo.setPictureList(pictureList);
 
         return travelVo;
+    }
+
+    @Override
+    public Boolean addTrave(TravelAddDto travelAddDto) {
+        Travel travel = new Travel();
+        BeanUtil.copyProperties(travelAddDto, travel);
+        boolean save = this.save(travel);
+        if (!save) {
+            throw new BusinessException(ErrorCode.DATA_INSERT_ERROR);
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean updateTravel(TravelUpdateDto travelUpdateDto) {
+        Travel travel = new Travel();
+        BeanUtil.copyProperties(travelUpdateDto, travel);
+        boolean b = this.updateById(travel);
+        if (!b) {
+            throw new BusinessException(ErrorCode.DATA_UPDATE_ERROR);
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean deleteTravelById(Long travelId) {
+        boolean remove = this.remove(new QueryWrapper<Travel>().eq("travelId", travelId));
+        if (!remove) {
+            throw new BusinessException(ErrorCode.DATA_DELETE_ERROR);
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean deleteTravels(Long[] travelIds) {
+        List<Long> list = Arrays.stream(travelIds).collect(Collectors.toList());
+        boolean b = this.removeBatchByIds(list);
+        if (!b) {
+            throw new BusinessException(ErrorCode.DATA_DELETE_ERROR);
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean onlineProject(Long travelId) {
+        Travel travel = this.getOne(new QueryWrapper<Travel>().eq("travelId", travelId));
+        // todo 枚举值
+        travel.setProjectStatus(1);
+        boolean b = this.updateById(travel);
+        if (!b) {
+            throw new BusinessException(ErrorCode.DATA_UPDATE_ERROR);
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean offlineProject(Long travelId) {
+        Travel travel = this.getOne(new QueryWrapper<Travel>().eq("travelId", travelId));
+        // todo 枚举值
+        travel.setProjectStatus(0);
+        boolean b = this.updateById(travel);
+        if (!b) {
+            throw new BusinessException(ErrorCode.DATA_UPDATE_ERROR);
+        }
+        return true;
     }
 }
 

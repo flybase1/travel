@@ -1,7 +1,10 @@
 package com.backend.travel.service;
 
+import com.backend.travel.POJO.VO.picture.PictureListVo;
 import com.backend.travel.POJO.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author admin
@@ -10,4 +13,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PictureService extends IService<Picture> {
 
+    /**
+     * 获取展示的照片
+     * @param travelId
+     * @return
+     */
+    List<PictureListVo> listPictureByTravelId(Long travelId);
 }

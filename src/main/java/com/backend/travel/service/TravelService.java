@@ -1,6 +1,8 @@
 package com.backend.travel.service;
 
+import com.backend.travel.POJO.DTO.Travel.TravelAddDto;
 import com.backend.travel.POJO.DTO.Travel.TravelPageDto;
+import com.backend.travel.POJO.DTO.Travel.TravelUpdateDto;
 import com.backend.travel.POJO.VO.travel.TravelPageVo;
 import com.backend.travel.POJO.VO.travel.TravelVo;
 import com.backend.travel.POJO.entity.Travel;
@@ -27,4 +29,46 @@ public interface TravelService extends IService<Travel> {
      * @return
      */
     TravelVo getTravelByTravelId(Long travelId);
+
+    /**
+     * 添加旅游项目
+     * @param travelAddDto
+     * @return
+     */
+    Boolean addTrave(TravelAddDto travelAddDto);
+
+    /**
+     * 修改旅游项目
+     * @param travelUpdateDto
+     * @return
+     */
+    Boolean updateTravel(TravelUpdateDto travelUpdateDto);
+
+    /**
+     * 删除指定旅游项目
+     * @param travelId
+     * @return
+     */
+    Boolean deleteTravelById(Long travelId);
+
+    /**
+     * 删除指定列表旅游项目
+     * @param travelIds
+     * @return
+     */
+    Boolean deleteTravels(Long[] travelIds);
+
+    /**
+     * 上线旅游项目
+     * @param travelId
+     * @return
+     */
+    Boolean onlineProject(Long travelId);
+
+    /**
+     * 下线旅游项目
+     * @param travelId
+     * @return
+     */
+    Boolean offlineProject(Long travelId);
 }
