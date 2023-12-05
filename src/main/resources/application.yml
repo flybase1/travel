@@ -32,7 +32,7 @@ server:
 
 
 qiniu:
-  accessKey: n9TzBTnphpov62YexeBwqi-uxgpcPU8OtnkbKMgb
-  secretKey: Ezz_fP-5UtLt5ZKdED5NOv4aHN2h3eZeTm_9JAV_
-  bucket: flybase
-  url: http://cdn.flycode.icu/
+  accessKey: xxx
+  secretKey: xx
+  bucket: xxxx
+  url: xxx
