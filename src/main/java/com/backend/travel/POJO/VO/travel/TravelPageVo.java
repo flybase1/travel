@@ -96,5 +96,10 @@ public class TravelPageVo implements Serializable {
      */
     private Integer projectStatus;
 
+    /**
+     * 封面图片
+     */
+    private String coverPictureUrl;
+
     private static final long serialVersionUID = -7802876218671592275L;
 }

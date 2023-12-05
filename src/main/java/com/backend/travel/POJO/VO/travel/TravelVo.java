@@ -75,4 +75,9 @@ public class TravelVo implements Serializable {
      * 项目状态
      */
     private Integer projectStatus;
+
+    /**
+     * 封面图片
+     */
+    private String coverPictureUrl;
 }

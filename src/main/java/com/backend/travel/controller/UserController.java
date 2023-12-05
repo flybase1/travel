@@ -1,5 +1,6 @@
 package com.backend.travel.controller;
 
+import com.backend.travel.POJO.DTO.UserDto.UserAvatarUpdate;
 import com.backend.travel.POJO.DTO.UserDto.UserPageDto;
 import com.backend.travel.POJO.DTO.UserDto.UserSaveDto;
 import com.backend.travel.POJO.DTO.UserDto.UserUpdateDto;
@@ -34,6 +35,7 @@ public class UserController {
 
     /**
      * 获取指定id用户的信息
+     *
      * @param userId
      * @return
      */
@@ -57,6 +59,7 @@ public class UserController {
 
     /**
      * 根据id修改用户信息
+     *
      * @param userUpdateDto
      * @return
      */
@@ -68,12 +71,24 @@ public class UserController {
 
     /**
      * 批量删除或者单个删除用户信息
+     *
      * @param userIds
      * @return
      */
     @DeleteMapping( "/deleteUser" )
     public BaseResponse<Boolean> deleteUserBathOrOne(@RequestBody Long[] userIds) {
         Boolean success = userService.deleteUserBathOrOne(userIds);
+        return ResultUtils.success(success);
+    }
+
+    /**
+     * 更新头像
+     * @param userAvatarUpdate
+     * @return
+     */
+    @PostMapping( "/uploadAvatar" )
+    public BaseResponse<Boolean> uploadUserAvatar(@RequestBody UserAvatarUpdate userAvatarUpdate) {
+        Boolean success = userService.updateUserAvatar(userAvatarUpdate);
         return ResultUtils.success(success);
     }
 }

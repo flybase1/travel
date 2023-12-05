@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.backend.travel.POJO.DTO.UserDto.UserAvatarUpdate;
 import com.backend.travel.POJO.DTO.UserDto.UserPageDto;
 import com.backend.travel.POJO.DTO.UserDto.UserUpdateDto;
 import com.backend.travel.POJO.VO.user.UserPageVo;
@@ -123,6 +124,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         userPageVoPage.setRecords(userPageVoList);
 
         return userPageVoPage;
+    }
+
+    @Override
+    public Boolean updateUserAvatar(UserAvatarUpdate userAvatarUpdate) {
+        String userAvatar = userAvatarUpdate.getUserAvatar();
+        Long userId = userAvatarUpdate.getUserId();
+        User user = this.getOne(new QueryWrapper<User>().eq("userId", userId));
+        user.setUserAvatar(userAvatar);
+        boolean b = this.updateById(user);
+        if (!b) {
+            throw new BusinessException(ErrorCode.DATA_UPDATE_ERROR);
+        }
+        return true;
     }
 }
 

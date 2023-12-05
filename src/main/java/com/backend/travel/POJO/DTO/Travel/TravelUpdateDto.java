@@ -53,4 +53,5 @@ public class TravelUpdateDto implements Serializable {
      */
     private Date endTime;
 
+    private String coverPictureUrl;
 }

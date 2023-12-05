@@ -29,3 +29,10 @@ server:
     session:
       cookie:
         max-age: 2592000
+
+
+qiniu:
+  accessKey: n9TzBTnphpov62YexeBwqi-uxgpcPU8OtnkbKMgb
+  secretKey: Ezz_fP-5UtLt5ZKdED5NOv4aHN2h3eZeTm_9JAV_
+  bucket: flybase
+  url: http://cdn.flycode.icu/

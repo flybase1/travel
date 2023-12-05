@@ -1,5 +1,6 @@
 package com.backend.travel.service;
 
+import com.backend.travel.POJO.DTO.UserDto.UserAvatarUpdate;
 import com.backend.travel.POJO.DTO.UserDto.UserPageDto;
 import com.backend.travel.POJO.DTO.UserDto.UserUpdateDto;
 import com.backend.travel.POJO.VO.user.UserPageVo;
@@ -42,4 +43,11 @@ public interface UserService extends IService<User> {
      * @return
      */
     Page<UserPageVo> pageUserVo(UserPageDto userPageDto);
+
+    /**
+     * 更新头像
+     * @param userAvatarUpdate
+     * @return
+     */
+    Boolean updateUserAvatar(UserAvatarUpdate userAvatarUpdate);
 }

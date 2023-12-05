@@ -54,4 +54,9 @@ public class TravelAddDto implements Serializable {
      */
     private Date endTime;
 
+    /**
+     * 图片地址
+     */
+    private String coverPictureUrl;
+
 }

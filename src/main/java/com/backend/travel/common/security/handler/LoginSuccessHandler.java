@@ -97,7 +97,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         // 3.包装返回用户信息
         UserVo userVo = new UserVo();
         userVo.setAccountId(accountId);
-        userVo.setUserId(userVo.getUserId());
+        userVo.setUserId(user.getUserId());
         userVo.setUsername(user.getUsername());
         userVo.setUserAvatar(user.getUserAvatar());
         userVo.setUserPhoneNum(account.getUserPhoneNum());

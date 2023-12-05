@@ -95,6 +95,11 @@ public class Travel implements Serializable {
      */
     private Integer projectStatus;
 
+    /**
+     * 封面图片
+     */
+    private String coverPictureUrl;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

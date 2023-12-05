@@ -50,6 +50,11 @@ public class TravelPageDto extends PageRequest implements Serializable {
      */
     private Date queryBeginTime;
 
+    /**
+     * 封面地址
+     */
+    private String coverPictureUrl;
+
 
     private static final long serialVersionUID = -7802876218671592275L;
 }

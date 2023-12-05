@@ -5,22 +5,23 @@
 <mapper namespace="com.backend.travel.dao.TravelMapper">
 
     <resultMap id="BaseResultMap" type="com.backend.travel.POJO.entity.Travel">
-            <id property="travelId" column="travelId" jdbcType="BIGINT"/>
-            <result property="accountId" column="accountId" jdbcType="BIGINT"/>
-            <result property="travelNumbers" column="travelNumbers" jdbcType="INTEGER"/>
-            <result property="travelTitle" column="travelTitle" jdbcType="VARCHAR"/>
-            <result property="travelDescription" column="travelDescription" jdbcType="VARCHAR"/>
-            <result property="travelPrice" column="travelPrice" jdbcType="DECIMAL"/>
-            <result property="typeId" column="typeId" jdbcType="INTEGER"/>
-            <result property="travelCityId" column="travelCityId" jdbcType="BIGINT"/>
-            <result property="travelScore" column="travelScore" jdbcType="DOUBLE"/>
-            <result property="travelStatusId" column="travelStatusId" jdbcType="TINYINT"/>
-            <result property="beginTime" column="beginTime" jdbcType="TIMESTAMP"/>
-            <result property="endTime" column="endTime" jdbcType="TIMESTAMP"/>
-            <result property="isDeleted" column="isDeleted" jdbcType="TINYINT"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <id property="travelId" column="travelId" jdbcType="BIGINT"/>
+        <result property="accountId" column="accountId" jdbcType="BIGINT"/>
+        <result property="travelNumbers" column="travelNumbers" jdbcType="INTEGER"/>
+        <result property="travelTitle" column="travelTitle" jdbcType="VARCHAR"/>
+        <result property="travelDescription" column="travelDescription" jdbcType="VARCHAR"/>
+        <result property="travelPrice" column="travelPrice" jdbcType="DECIMAL"/>
+        <result property="typeId" column="typeId" jdbcType="INTEGER"/>
+        <result property="travelCityId" column="travelCityId" jdbcType="BIGINT"/>
+        <result property="travelScore" column="travelScore" jdbcType="DOUBLE"/>
+        <result property="travelStatusId" column="travelStatusId" jdbcType="TINYINT"/>
+        <result property="beginTime" column="beginTime" jdbcType="TIMESTAMP"/>
+        <result property="endTime" column="endTime" jdbcType="TIMESTAMP"/>
+        <result property="isDeleted" column="isDeleted" jdbcType="TINYINT"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
         <result property="projectStatus" column="projectStatus" jdbcType="INTEGER"/>
+        <result property="coverPictureUrl" column="coverPictureUrl" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -29,6 +30,6 @@
         typeId,travelCityId,
         travelScore,travelStatusId,beginTime,
         endTime,isDeleted,createTime,projectStatus
-        updateTime
+        updateTime,coverPictureUrl
     </sql>
 </mapper>
