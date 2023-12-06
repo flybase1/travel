@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.backend.travel.dao.TravelTeamGuideMapper">
+
+    <resultMap id="BaseResultMap" type="com.backend.travel.POJO.entity.TravelTeamGuide">
+            <id property="travelTeamGuideId" column="travelTeamGuideId" jdbcType="BIGINT"/>
+            <result property="guideId" column="guideId" jdbcType="BIGINT"/>
+            <result property="travelTeamId" column="travelTeamId" jdbcType="BIGINT"/>
+            <result property="joinTime" column="joinTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        travelTeamGuideId,guideId,travelTeamId,
+        joinTime
+    </sql>
+</mapper>
