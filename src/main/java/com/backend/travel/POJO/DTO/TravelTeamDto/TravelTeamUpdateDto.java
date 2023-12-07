@@ -1,24 +1,17 @@
 package com.backend.travel.POJO.DTO.TravelTeamDto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 队伍添加表
+ * 队伍修改表
  * @TableName travel_team
  */
 @Data
-public class TravelTeamAddDto implements Serializable {
-    /**
-     * 项目id
-     */
-    private Long travelId;
+public class TravelTeamUpdateDto implements Serializable {
+    private Long travelTeamId;
 
     /**
      * 最大人员数量/不包括导游
@@ -36,19 +29,10 @@ public class TravelTeamAddDto implements Serializable {
     private Integer nowNum;
 
     /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 创建旅游队伍账号的id
-     */
-    private Long createTeamAccountId;
-
-    /**
      * 队伍名
      */
     private String travelTeamName;
+
 
     private static final long serialVersionUID = 1L;
 }

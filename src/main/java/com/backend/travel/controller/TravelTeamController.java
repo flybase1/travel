@@ -2,7 +2,9 @@ package com.backend.travel.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.backend.travel.POJO.DTO.TravelTeamDto.TravelTeamAddDto;
+import com.backend.travel.POJO.DTO.TravelTeamDto.TravelTeamChangeStatusDto;
 import com.backend.travel.POJO.DTO.TravelTeamDto.TravelTeamPageDto;
+import com.backend.travel.POJO.DTO.TravelTeamDto.TravelTeamUpdateDto;
 import com.backend.travel.POJO.VO.travelTeam.TravelTeamPageVo;
 import com.backend.travel.POJO.VO.travelTeam.TravelTeamVo;
 import com.backend.travel.POJO.entity.TravelTeam;
@@ -23,6 +25,7 @@ public class TravelTeamController {
 
     /**
      * 分页展示队伍
+     *
      * @param travelTeamPageDto
      * @return
      */
@@ -34,6 +37,7 @@ public class TravelTeamController {
 
     /**
      * 获取指定队伍
+     *
      * @param travelTeamId
      * @return
      */
@@ -47,6 +51,7 @@ public class TravelTeamController {
 
     /**
      * 修改指定队伍
+     *
      * @param travelTeamAddDto
      * @return
      */
@@ -55,4 +60,41 @@ public class TravelTeamController {
         Boolean addTravelTeam = travelTeamService.addTravelTeam(travelTeamAddDto);
         return ResultUtils.success(addTravelTeam);
     }
+
+    /**
+     * 更新队伍
+     *
+     * @param travelTeamUpdateDto
+     * @return
+     */
+    @PutMapping( "/updateTravelTeam" )
+    public BaseResponse<Boolean> updateTravelTeam(@RequestBody TravelTeamUpdateDto travelTeamUpdateDto) {
+        Boolean success = travelTeamService.updateTravelTeam(travelTeamUpdateDto);
+        return ResultUtils.success(success);
+    }
+
+    /**
+     * 删除结合队伍
+     *
+     * @param travelTeamIds
+     * @return
+     */
+    @DeleteMapping( "/deleteTravelTeams" )
+    public BaseResponse<Boolean> deleteTravelTeams(@RequestBody Long[] travelTeamIds) {
+        Boolean success = travelTeamService.deleteTravelTeamByIds(travelTeamIds);
+        return ResultUtils.success(success);
+    }
+
+    /**
+     * 修改状态
+     *
+     * @return
+     */
+    @PutMapping( "/changeStatus/{travelTeamId}" )
+    public BaseResponse<Boolean> changeStatus(@PathVariable Long travelTeamId) {
+        Boolean success = travelTeamService.changeTravelTeamStatus(travelTeamId);
+        return ResultUtils.success(success);
+    }
+
+
 }

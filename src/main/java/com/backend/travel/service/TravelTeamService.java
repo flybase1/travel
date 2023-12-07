@@ -1,7 +1,9 @@
 package com.backend.travel.service;
 
 import com.backend.travel.POJO.DTO.TravelTeamDto.TravelTeamAddDto;
+import com.backend.travel.POJO.DTO.TravelTeamDto.TravelTeamChangeStatusDto;
 import com.backend.travel.POJO.DTO.TravelTeamDto.TravelTeamPageDto;
+import com.backend.travel.POJO.DTO.TravelTeamDto.TravelTeamUpdateDto;
 import com.backend.travel.POJO.VO.travelTeam.TravelTeamPageVo;
 import com.backend.travel.POJO.entity.TravelTeam;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -23,8 +25,30 @@ public interface TravelTeamService extends IService<TravelTeam> {
 
     /**
      * 添加队伍
+     *
      * @param travelTeamAddDto
      * @return
      */
     Boolean addTravelTeam(TravelTeamAddDto travelTeamAddDto);
+
+    /**
+     * 修改队伍
+     *
+     * @param travelTeamUpdateDto
+     * @return
+     */
+    Boolean updateTravelTeam(TravelTeamUpdateDto travelTeamUpdateDto);
+
+    /**
+     * 删除队伍
+     * @param travelTeamIds
+     * @return
+     */
+    Boolean deleteTravelTeamByIds(Long[] travelTeamIds);
+
+    /**
+     * 修改状态
+     * @return
+     */
+    Boolean changeTravelTeamStatus(Long travelTeamId);
 }

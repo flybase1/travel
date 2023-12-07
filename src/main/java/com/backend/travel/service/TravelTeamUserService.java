@@ -1,6 +1,9 @@
 package com.backend.travel.service;
 
+import com.backend.travel.POJO.DTO.TravelTeamUserDto.TravelTeamUserPageDto;
+import com.backend.travel.POJO.VO.travelTeamUser.TravelTeamUserVo;
 import com.backend.travel.POJO.entity.TravelTeamUser;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -10,4 +13,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface TravelTeamUserService extends IService<TravelTeamUser> {
 
+    /**
+     * 分页展示
+     * @param travelTeamUserPageDto
+     * @return
+     */
+    Page<TravelTeamUserVo> pageTravelTeamUser(TravelTeamUserPageDto travelTeamUserPageDto);
 }

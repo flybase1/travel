@@ -56,6 +56,11 @@ public class TravelTeam implements Serializable {
      */
     private String travelTeamName;
 
+    /**
+     * 队伍状态 0-开加入 1-不可加入
+     */
+    private Integer travelTeamStatus;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

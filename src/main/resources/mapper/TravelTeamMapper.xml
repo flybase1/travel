@@ -13,11 +13,13 @@
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="createTeamAccountId" column="createTeamAccountId" jdbcType="BIGINT"/>
         <result property="travelTeamName" column="travelTeamName" jdbcType="VARCHAR"/>
+        <result property="travelTeamStatus" column="travelTeamStatus" jdbcType="INTEGER"/>
+
     </resultMap>
 
     <sql id="Base_Column_List">
         travelTeamId,travelId,maxNum,
         guideNum,nowNum,createTime,
-        createTeamAccountId,travelTeamName
+        createTeamAccountId,travelTeamName,travelTeamStatus
     </sql>
 </mapper>

@@ -1,5 +1,8 @@
 package com.backend.travel.service.impl;
 
+import com.backend.travel.POJO.DTO.TravelTeamUserDto.TravelTeamUserPageDto;
+import com.backend.travel.POJO.VO.travelTeamUser.TravelTeamUserVo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.backend.travel.POJO.entity.TravelTeamUser;
 import com.backend.travel.service.TravelTeamUserService;
@@ -15,6 +18,10 @@ import org.springframework.stereotype.Service;
 public class TravelTeamUserServiceImpl extends ServiceImpl<TravelTeamUserMapper, TravelTeamUser>
     implements TravelTeamUserService{
 
+    @Override
+    public Page<TravelTeamUserVo> pageTravelTeamUser(TravelTeamUserPageDto travelTeamUserPageDto) {
+        return null;
+    }
 }
 
 

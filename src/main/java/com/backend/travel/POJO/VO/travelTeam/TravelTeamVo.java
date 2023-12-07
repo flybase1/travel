@@ -11,9 +11,10 @@ import java.util.Date;
 
 /**
  * 队伍表
+ *
  * @TableName travel_team
  */
-
+@Data
 public class TravelTeamVo implements Serializable {
     /**
      * 创建项目队伍id
@@ -51,6 +52,9 @@ public class TravelTeamVo implements Serializable {
     private Long createTeamAccountId;
 
     private String travelTeamName;
+
+
+    private Integer travelTeamStatus;
 
     private static final long serialVersionUID = 1L;
 }

@@ -5,14 +5,17 @@
 <mapper namespace="com.backend.travel.dao.TravelTeamUserMapper">
 
     <resultMap id="BaseResultMap" type="com.backend.travel.POJO.entity.TravelTeamUser">
-            <id property="teamId" column="teamId" jdbcType="BIGINT"/>
-            <result property="travelTeamId" column="travelTeamId" jdbcType="BIGINT"/>
-            <result property="joinAccountId" column="joinAccountId" jdbcType="BIGINT"/>
-            <result property="joinTime" column="joinTime" jdbcType="TIMESTAMP"/>
+        <id property="travelTeamUserId" column="travelTeamUserId" jdbcType="BIGINT"/>
+        <result property="travelTeamId" column="travelTeamId" jdbcType="BIGINT"/>
+        <result property="joinAccountId" column="joinAccountId" jdbcType="BIGINT"/>
+        <result property="joinTime" column="joinTime" jdbcType="TIMESTAMP"/>
+        <result property="isFinished" column="isFinished" jdbcType="TINYINT"/>
+        <result property="isGuide" column="isGuide" jdbcType="TINYINT"/>
+
     </resultMap>
 
     <sql id="Base_Column_List">
-        teamId,travelTeamId,joinAccountId,
-        joinTime
+        travelTeamUserId,travelTeamId,joinAccountId,
+        joinTime,isFinished,isGuide
     </sql>
 </mapper>

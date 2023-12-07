@@ -38,6 +38,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private static final String[] URL_WHITELIST = {
             "/api/login",
+            "/api/testLogin",
             "/api/test/test",
             "/api/test/noAuth/list",
             "/doc.html",

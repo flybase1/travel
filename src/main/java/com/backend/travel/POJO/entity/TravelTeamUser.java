@@ -19,7 +19,7 @@ public class TravelTeamUser implements Serializable {
      * 当前主键
      */
     @TableId(type = IdType.AUTO)
-    private Long teamId;
+    private Long travelTeamUserId;
 
     /**
      * 关联旅游队伍主键
@@ -36,6 +36,12 @@ public class TravelTeamUser implements Serializable {
      */
     private Date joinTime;
 
+    private Integer isFinished;
+
+    /**
+     * 是否是导游 0-用户 1-导游
+     */
+    private Integer isGuide;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
