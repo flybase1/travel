@@ -5,6 +5,7 @@ import com.backend.travel.service.AccountService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.Resource;
@@ -15,6 +16,8 @@ class TravelApplicationTests {
     private AccountService accountService;
     @Resource
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
 
     @Test
     void contextLoads() {
@@ -31,5 +34,11 @@ class TravelApplicationTests {
     void name() {
         Account test = accountService.getByUserName("admin");
         System.out.println(test);
+    }
+
+    @Test
+    void test() {
+        String s = redisTemplate.opsForValue().get("8aff3e53-59ec-4ef3-9ae1-565f9c8ae0d1");
+        System.out.println(s);
     }
 }

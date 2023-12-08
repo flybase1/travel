@@ -30,7 +30,7 @@ public class ImageCodeValidateFilter extends OncePerRequestFilter {
 
     private final String codeParamter = "code";  // 前端输入的图形验证码参数名
     @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
     @Autowired
     private LoginFailureHandler authenticationFailureHandler;  // 自定义认证失败处理器
 
@@ -64,8 +64,8 @@ public class ImageCodeValidateFilter extends OncePerRequestFilter {
         requestCode = requestCode.trim();
         log.info("requestCode-----" + requestCode);
         UUID uuid = UUID.fromString(request.getParameter("uuid"));
-        Object o = redisTemplate.opsForValue().get(uuid.toString());
-        String saveCode = JSONUtil.toBean((JSONObject) o, String.class);
+
+        String saveCode = redisTemplate.opsForValue().get(uuid.toString());
 
         log.info("saveCode-----" + saveCode);
         if (StringUtils.isBlank(saveCode)) {

@@ -29,6 +29,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping( "/captcha" )
@@ -37,7 +38,7 @@ public class CaptchaController {
     @Autowired
     private DefaultKaptcha defaultKaptcha;
     @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     @GetMapping( "/code" )
     public BaseResponse<HashMap<String, Object>> getCaptcha(HttpServletResponse response, HttpServletRequest request) throws IOException {
@@ -45,21 +46,7 @@ public class CaptchaController {
         String capText = defaultKaptcha.createText();
         // 创建验证码图片
         BufferedImage image = defaultKaptcha.createImage(capText);
-
-        // 将验证码文本放进 Session 中
-        // CheckCode code = new CheckCode(capText);
-//        request.getSession().setAttribute(Constants.KAPTCHA_SESSION_KEY, code);
-
-        // 将验证码图片返回，禁止验证码图片缓存
-//        response.setHeader("Cache-Control", "no-store");
-//        response.setHeader("Pragma", "no-cache");
-//        response.setDateHeader("Expires", 0);
-//        response.setContentType("image/jpeg");
-
-//        CheckCode checkCode = (CheckCode) request.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
-//        log.info("验证码文本：" + checkCode.getCode());
-//        ImageIO.write(image, "jpg", response.getOutputStream());
-
+        log.info("验证码文本:{}", capText);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "jpg", outputStream);
@@ -69,8 +56,7 @@ public class CaptchaController {
         String base64Img = str + encoder.encode(outputStream.toByteArray());
         UUID randomUUID = UUID.randomUUID();
         // 存入redis
-        String res = JSONUtil.toJsonStr(capText);
-        redisTemplate.opsForValue().set(randomUUID.toString(), res, 60 * 5);
+        redisTemplate.opsForValue().set(randomUUID.toString(), capText, 60 * 5, TimeUnit.SECONDS);
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("uuid", randomUUID.toString());
