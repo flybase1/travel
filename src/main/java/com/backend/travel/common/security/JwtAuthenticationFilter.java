@@ -55,6 +55,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     @Resource
     private MyUserDetailService myUserDetailService;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = request.getHeader("token");

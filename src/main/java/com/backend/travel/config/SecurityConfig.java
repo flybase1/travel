@@ -2,6 +2,7 @@ package com.backend.travel.config;
 
 
 import com.backend.travel.common.security.*;
+import com.backend.travel.common.security.filter.ImageCodeValidateFilter;
 import com.backend.travel.common.security.handler.JwtLogoutSuccessHandler;
 import com.backend.travel.common.security.handler.LoginFailureHandler;
 import com.backend.travel.common.security.handler.LoginSuccessHandler;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -30,6 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/login",
             "/test/test",
             "/test/noAuth/list",
+            "/captcha/code",
             "/doc.html",
             "/doc.html/**",
             "/doc.html#/**",
@@ -51,6 +54,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
 
+    @Resource
+    private ImageCodeValidateFilter imageCodeValidateFilter; // 自定义过滤器（图形验证码校验）
+
     // jwt过滤器
     @Bean
     JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
@@ -68,7 +74,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(myUserDetailService);
     }
 
-
+    /**
+     * 定制基于 HTTP 请求的用户访问控制
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // 跨域以及csrf攻击
@@ -80,6 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 // 登入,登出
                 .formLogin()
+                // 设置登录页面的访问路径，默认为 /login，GET 请求；该路径不设限访问
                 .loginProcessingUrl("/login")
                 .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler)
@@ -93,7 +102,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 拦截规则配置,放行白名单
                 .and()
                 .authorizeRequests()
+                // 以下访问不需要任何权限，任何人都可以访问
                 .antMatchers(URL_WHITELIST).permitAll()
+                // 其它任何请求访问都需要先通过认证
                 .anyRequest().authenticated()
 
                 // 异常处理
@@ -102,6 +113,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 // 自定义过滤
                 .and()
+                .addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilter(jwtAuthenticationFilter());
     }
 
