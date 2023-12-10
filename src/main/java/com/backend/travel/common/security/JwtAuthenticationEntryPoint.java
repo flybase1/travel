@@ -23,7 +23,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         ServletOutputStream outputStream = response.getOutputStream();
         BaseResponse baseResponse = ResultUtils.error(ErrorCode.AUTHENTICATION_FAILED, "认证失败,重新登录");
         outputStream.write(JSONUtil.toJsonStr(baseResponse).getBytes(StandardCharsets.UTF_8));
-
         outputStream.flush();
         outputStream.close();
     }

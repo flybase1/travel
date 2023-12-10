@@ -2,10 +2,7 @@ package com.backend.travel.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import com.backend.travel.POJO.DTO.AccountDto.AccountInfoVo;
-import com.backend.travel.POJO.DTO.AccountDto.AccountPageDto;
-import com.backend.travel.POJO.DTO.AccountDto.AccountSaveDto;
-import com.backend.travel.POJO.DTO.AccountDto.AccountUpdateDto;
+import com.backend.travel.POJO.DTO.AccountDto.*;
 import com.backend.travel.POJO.VO.AccountPageVo;
 import com.backend.travel.POJO.entity.*;
 import com.backend.travel.common.CommonConstant;
@@ -54,9 +51,15 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
     @Override
     public Account getByUserName(String userAccount) {
         QueryWrapper<Account> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
+        queryWrapper.eq("userAccount", userAccount).or().eq("userPhoneNum", userAccount);
         Account one = this.getOne(queryWrapper);
         return one;
+    }
+
+    @Override
+    public Account getByUserPhoneNum(String phoneNum) {
+        Account account = this.getOne(new QueryWrapper<Account>().eq("userPhoneNum", phoneNum));
+        return account;
     }
 
     @Override
@@ -318,6 +321,46 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
         }
 
         return b;
+    }
+
+    @Override
+    @Transactional
+    public Boolean userRegisterAccount(AccountRegisterDto accountRegisterDto) {
+        String userAccount = accountRegisterDto.getUserAccount();
+        String userPassword = accountRegisterDto.getUserPassword();
+        String userPhoneNum = accountRegisterDto.getUserPhoneNum();
+        String checkPassword = accountRegisterDto.getCheckPassword();
+        if (userPassword != checkPassword) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次密码不一致");
+        }
+        // 保存账号
+        Account account = new Account();
+        account.setUserAccount(userAccount);
+        account.setUserPassword(userPassword);
+        account.setUserPhoneNum(userPhoneNum);
+        boolean save = this.save(account);
+        if (!save) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        // 保存用户
+        Long accountId = account.getAccountId();
+        User user = new User();
+        user.setUsername(userAccount);
+        user.setAccountId(accountId);
+        boolean save1 = userService.save(user);
+        if (!save1) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        // 保存权限
+        SysAccountRole sysAccountRole = new SysAccountRole();
+        sysAccountRole.setAccountId(accountId);
+        //todo 枚举值
+        sysAccountRole.setRoleId(2);
+        boolean save2 = sysAccountRoleService.save(sysAccountRole);
+        if (!save2) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        return true;
     }
 
 }

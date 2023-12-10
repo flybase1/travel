@@ -1,9 +1,6 @@
 package com.backend.travel.service;
 
-import com.backend.travel.POJO.DTO.AccountDto.AccountInfoVo;
-import com.backend.travel.POJO.DTO.AccountDto.AccountPageDto;
-import com.backend.travel.POJO.DTO.AccountDto.AccountSaveDto;
-import com.backend.travel.POJO.DTO.AccountDto.AccountUpdateDto;
+import com.backend.travel.POJO.DTO.AccountDto.*;
 import com.backend.travel.POJO.VO.AccountPageVo;
 import com.backend.travel.POJO.entity.Account;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,6 +21,12 @@ public interface AccountService extends IService<Account> {
      */
     Account getByUserName(String username);
 
+    /**
+     * 手机号获取
+     * @param phoneNum
+     * @return
+     */
+    Account getByUserPhoneNum(String phoneNum);
     /**
      * 获取权限菜单
      *
@@ -89,4 +92,11 @@ public interface AccountService extends IService<Account> {
      * @return
      */
     Boolean grantRole(Long accountId, Integer[] roleIds);
+
+    /**
+     * 用户注册
+     * @param accountRegisterDto
+     * @return
+     */
+    Boolean userRegisterAccount(AccountRegisterDto accountRegisterDto);
 }

@@ -1,9 +1,6 @@
 package com.backend.travel.controller;
 
-import com.backend.travel.POJO.DTO.AccountDto.AccountInfoVo;
-import com.backend.travel.POJO.DTO.AccountDto.AccountPageDto;
-import com.backend.travel.POJO.DTO.AccountDto.AccountSaveDto;
-import com.backend.travel.POJO.DTO.AccountDto.AccountUpdateDto;
+import com.backend.travel.POJO.DTO.AccountDto.*;
 import com.backend.travel.POJO.VO.AccountPageVo;
 import com.backend.travel.POJO.entity.Account;
 import com.backend.travel.common.BaseResponse;
@@ -13,6 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -143,6 +141,23 @@ public class AccountController {
     @PreAuthorize( "hasAuthority('system:account:role') " )
     public BaseResponse<Boolean> grantRole(@PathVariable( "accountId" ) Long accountId, @RequestBody Integer[] roleIds) {
         Boolean success = accountService.grantRole(accountId, roleIds);
+        return ResultUtils.success(success);
+    }
+
+
+    /**
+     * ------------------------------ user-----------------------------------
+     */
+
+    /**
+     * 用户注册
+     *
+     * @param accountRegisterDto
+     * @return
+     */
+    @PostMapping( "userRegister" )
+    public BaseResponse<Boolean> userRegisterAccount(@Validated @RequestBody AccountRegisterDto accountRegisterDto) {
+        Boolean success = accountService.userRegisterAccount(accountRegisterDto);
         return ResultUtils.success(success);
     }
 }

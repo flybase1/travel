@@ -7,6 +7,7 @@ public enum ErrorCode {
 
     SUCCESS(0, "ok"),
     ACCOUNT_BLOCK(30000, "账号已被封禁"),
+    PHONE_NOT_EXIST(30001, "手机号未被注册"),
     PARAMS_ERROR(40000, "请求参数错误"),
     PARAMS_EMPTY_ERROR(40001, "参数不能为空"),
     DATA_EXIST_ERROR(40002, "数据已存在"),

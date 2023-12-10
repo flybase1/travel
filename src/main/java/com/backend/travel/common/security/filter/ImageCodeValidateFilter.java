@@ -37,9 +37,9 @@ public class ImageCodeValidateFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 非 POST 方式的表单提交请求不校验图形验证码
-        log.error(request.getRequestURI());
+        log.error("现在的请求是" + request.getRequestURI());
         log.error(request.getMethod());
-        if ("/api/login".equals(request.getRequestURI()) && "POST".equals(request.getMethod())) {
+        if (("/api/login".equals(request.getRequestURI())) && "POST".equals(request.getMethod())) {
             try {
                 // 校验图形验证码合法性
                 validate(request);
@@ -64,40 +64,16 @@ public class ImageCodeValidateFilter extends OncePerRequestFilter {
         requestCode = requestCode.trim();
         log.info("requestCode-----" + requestCode);
         UUID uuid = UUID.fromString(request.getParameter("uuid"));
-
+        // 从redis里面获取相应的uuid的村的code数据
         String saveCode = redisTemplate.opsForValue().get(uuid.toString());
-
         log.info("saveCode-----" + saveCode);
         if (StringUtils.isBlank(saveCode)) {
             throw new ValidateCodeException("验证码的值不能为空");
         }
-        if (!saveCode.equals(requestCode)) {
+        if (!saveCode.equalsIgnoreCase(requestCode)) {
             throw new ValidateCodeException("验证码不正确");
         }
-        // 获取 Session
-//        HttpSession session = request.getSession();
-//        // 获取存储在 Session 里的验证码值
-//        CheckCode savedCode = (CheckCode) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
-//        if (savedCode != null) {
-//            // 随手清除验证码，无论是失败，还是成功。客户端应在登录失败时刷新验证码
-//            session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
-//        }
-//        log.info("savedCode----" + savedCode);
-//        // 校验出错，抛出异常
-//        if (StringUtils.isBlank(requestCode)) {
-//            throw new ValidateCodeException("验证码的值不能为空");
-//        }
-//
-//        if (savedCode == null) {
-//            throw new ValidateCodeException("验证码不存在");
-//        }
-//
-//        if (savedCode.isExpried()) {
-//            throw new ValidateCodeException("验证码过期");
-//        }
-//
-//        if (!requestCode.equalsIgnoreCase(savedCode.getCode())) {
-//            throw new ValidateCodeException("验证码输入错误");
-//        }
+        // 用完删除key，不论有没有成功
+        redisTemplate.delete(uuid.toString());
     }
 }

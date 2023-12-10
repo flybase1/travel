@@ -38,7 +38,7 @@ class TravelApplicationTests {
 
     @Test
     void test() {
-        String s = redisTemplate.opsForValue().get("8aff3e53-59ec-4ef3-9ae1-565f9c8ae0d1");
+        String s = redisTemplate.opsForValue().get("13222221221");
         System.out.println(s);
     }
 }

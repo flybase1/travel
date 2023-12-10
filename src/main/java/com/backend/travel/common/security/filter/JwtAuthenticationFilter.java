@@ -1,8 +1,9 @@
-package com.backend.travel.common.security;
+package com.backend.travel.common.security.filter;
 
 import cn.hutool.core.util.StrUtil;
 import com.backend.travel.POJO.entity.Account;
 import com.backend.travel.common.ErrorCode;
+import com.backend.travel.common.security.MyUserDetailService;
 import com.backend.travel.constant.CheckResult;
 import com.backend.travel.constant.JWTConstant;
 import com.backend.travel.execption.BusinessException;
@@ -38,8 +39,10 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private static final String[] URL_WHITELIST = {
             "/api/login",
+            "/api/phoneLogin",
             "/api/testLogin",
             "/api/test/test",
+            "/api/register/**",
             "/api/test/noAuth/list",
             "/doc.html",
             "/doc.html/**",
@@ -84,6 +87,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         log.info("userAccount:" + userAccount);
 
         Account account = accountService.getByUserName(userAccount);
+
+
         List<GrantedAuthority> userAuthority = myUserDetailService.getUserAuthority(account.getAccountId());
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userAccount, null, userAuthority);
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

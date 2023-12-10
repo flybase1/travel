@@ -61,6 +61,11 @@
             <artifactId>qiniu-java-sdk</artifactId>
             <version>[7.13.0, 7.13.99]</version>
         </dependency>
+        <!--校验-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
 
         <!--hutool工具包依赖-->
         <dependency>

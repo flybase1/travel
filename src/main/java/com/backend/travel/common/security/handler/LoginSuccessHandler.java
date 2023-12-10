@@ -36,8 +36,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Resource
     private SysRoleServiceImpl sysRoleService;
     @Resource
-    private SysRoleMenuServiceImpl sysRoleMenuService;
-    @Resource
     private SysAccountRoleServiceImpl sysAccountRoleService;
     @Resource
     private SysMenuServiceImpl sysMenuService;
@@ -48,20 +46,12 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         ServletOutputStream outputStream = response.getOutputStream();
         String userAccount = authentication.getName();
         Account account = accountService.getByUserName(userAccount);
+
         Long accountId = account.getAccountId();
         User user = userService.getOne(new QueryWrapper<User>().eq("accountId", accountId));
 
         Integer roleId = account.getPermissionId();
 
-//        List<SysRole> roleList = sysRoleService.list(new QueryWrapper<SysRole>().inSql("id", "SELECT roleId FROM sys_account_role WHERE accountId=" + accountId));
-//        Set<SysMenu> menuSet=new HashSet<>();
-//        for(SysRole sysRole:roleList){
-//            List<SysMenu> sysMenuList = sysMenuService.list(new QueryWrapper<SysMenu>().inSql("id", "SELECT menuId FROM sys_role_menu WHERE roleId=" + sysRole.getRoleId()));
-//            for(SysMenu sysMenu:sysMenuList){
-//                menuSet.add(sysMenu);
-//            }
-//        }
-//
         List<SysAccountRole> sysAccountRoleList = sysAccountRoleService.list(new QueryWrapper<SysAccountRole>().eq("accountId", accountId));
         List<Integer> roleIdList = sysAccountRoleList.stream().map(sysAccountRole -> {
             Integer sysAccountRoleRoleId = sysAccountRole.getRoleId();
@@ -78,17 +68,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             }
         }
 
-
-//        SysRole role = sysRoleService.getOne(new QueryWrapper<SysRole>().eq("roleId", roleId));
-//        // 1. 查找权限对应的菜单列表
-//        List<SysRoleMenu> roleMenuList = sysRoleMenuService.list(new QueryWrapper<SysRoleMenu>().eq("roleId", roleId));
-//
-//        // 2. 菜单列表查询所有相关信息
-//        Set<SysMenu> menuCodeSet = new HashSet<>();
-//        roleMenuList.forEach(sysRoleMenu -> {
-//            SysMenu sysMenu = sysMenuService.getOne(new QueryWrapper<SysMenu>().eq("id", sysRoleMenu.getMenuId()));
-//            menuCodeSet.add(sysMenu);
-//        });
         ArrayList<SysMenu> arrayList = new ArrayList<SysMenu>(menuSet);
         // 排序
         arrayList.sort(Comparator.comparing(SysMenu::getOrderNum, Comparator.nullsLast(Comparator.naturalOrder())));
