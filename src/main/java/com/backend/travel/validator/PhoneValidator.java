@@ -10,7 +10,7 @@ import javax.validation.ConstraintValidatorContext;
  */
 public class PhoneValidator implements ConstraintValidator<Phone, String> {
 
-    private static final String REGEX = "^1[3456789]\\\\d{9}$";
+    private static final String REGEX = "^1[3456789]\\d{9}$";
 
     /**
      * @param value

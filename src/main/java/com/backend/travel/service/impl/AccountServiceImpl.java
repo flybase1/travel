@@ -326,39 +326,49 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account>
     @Override
     @Transactional
     public Boolean userRegisterAccount(AccountRegisterDto accountRegisterDto) {
+        log.info("accountRegisterDto:{}", accountRegisterDto);
         String userAccount = accountRegisterDto.getUserAccount();
         String userPassword = accountRegisterDto.getUserPassword();
         String userPhoneNum = accountRegisterDto.getUserPhoneNum();
         String checkPassword = accountRegisterDto.getCheckPassword();
-        if (userPassword != checkPassword) {
+        if (!Objects.equals(userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次密码不一致");
         }
-        // 保存账号
-        Account account = new Account();
-        account.setUserAccount(userAccount);
-        account.setUserPassword(userPassword);
-        account.setUserPhoneNum(userPhoneNum);
-        boolean save = this.save(account);
-        if (!save) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        Account one = this.getOne(new QueryWrapper<Account>().eq("userAccount", userAccount));
+        if (one != null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "已经有用户注册了，请重新换个账号名");
         }
-        // 保存用户
-        Long accountId = account.getAccountId();
-        User user = new User();
-        user.setUsername(userAccount);
-        user.setAccountId(accountId);
-        boolean save1 = userService.save(user);
-        if (!save1) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
-        }
-        // 保存权限
-        SysAccountRole sysAccountRole = new SysAccountRole();
-        sysAccountRole.setAccountId(accountId);
-        //todo 枚举值
-        sysAccountRole.setRoleId(2);
-        boolean save2 = sysAccountRoleService.save(sysAccountRole);
-        if (!save2) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+
+        String encode = bCryptPasswordEncoder.encode(userPassword);
+        synchronized (userAccount.intern()) {
+            // 保存账号
+            Account account = new Account();
+            account.setUserAccount(userAccount);
+            account.setUserPassword(encode);
+            account.setUserPhoneNum(userPhoneNum);
+            boolean save = this.save(account);
+            if (!save) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            }
+            // 保存用户
+            Long accountId = account.getAccountId();
+            User user = new User();
+            user.setUsername(userAccount);
+            user.setAccountId(accountId);
+            boolean save1 = userService.save(user);
+            if (!save1) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            }
+            // 保存权限
+            SysAccountRole sysAccountRole = new SysAccountRole();
+            sysAccountRole.setAccountId(accountId);
+            //todo 枚举值
+            sysAccountRole.setRoleId(2);
+            boolean save2 = sysAccountRoleService.save(sysAccountRole);
+            if (!save2) {
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+            }
+
         }
         return true;
     }

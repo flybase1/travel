@@ -160,4 +160,6 @@ public class AccountController {
         Boolean success = accountService.userRegisterAccount(accountRegisterDto);
         return ResultUtils.success(success);
     }
+
+
 }

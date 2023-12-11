@@ -41,7 +41,6 @@ public class GlobalExceptionHandler {
     /**
      * @RequestBody 上校验失败后抛出的异常是 MethodArgumentNotValidException 异常。
      */
-    @ResponseStatus( HttpStatus.BAD_REQUEST )
     @ExceptionHandler( value = MethodArgumentNotValidException.class )
     public BaseResponse<?> handler(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();

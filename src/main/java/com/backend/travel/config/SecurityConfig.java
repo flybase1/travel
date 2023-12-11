@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/test/noAuth/list",
             "/captcha/code",
             "/sms/smsCode",
-            "/register/**",
+            "/account/userRegister",
             "/api/phoneLogin",
             "/doc.html",
             "/doc.html/**",
@@ -117,7 +117,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 // 手机验证码
                 .and()
-                .apply(mobileAuthenticationSecurityConfig).and()
                 // 拦截规则配置,放行白名单
 
                 .authorizeRequests()
@@ -135,20 +134,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(imageCodeValidateFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .addFilter(jwtAuthenticationFilter())
-                // 禁止再次登录,挤下线功能
-                .sessionManagement()
-                .maximumSessions(1)
-                .expiredSessionStrategy(event -> {
-                    HttpServletResponse response = event.getResponse();
-                    response.setContentType("application/json;charset=utf-8");
-                    BaseResponse baseResponse = ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR, "当前会话已经失效，重新登陆");
-                    String res = new ObjectMapper().writeValueAsString(baseResponse);
-                    response.setContentType("application/json;charset=utf-8");
-                    response.getWriter().println(res);
-                    response.flushBuffer();
-                })
-                // 登录之后禁止再次登录
-                .maxSessionsPreventsLogin(true)
+        // 禁止再次登录,挤下线功能
+//                .sessionManagement()
+//                .maximumSessions(1)
+//                .expiredSessionStrategy(event -> {
+//                    HttpServletResponse response = event.getResponse();
+//                    response.setContentType("application/json;charset=utf-8");
+//                    BaseResponse baseResponse = ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR, "当前会话已经失效，重新登陆");
+//                    String res = new ObjectMapper().writeValueAsString(baseResponse);
+//                    response.setContentType("application/json;charset=utf-8");
+//                    response.getWriter().println(res);
+//                    response.flushBuffer();
+//                })
+//                // 登录之后禁止再次登录
+//                .maxSessionsPreventsLogin(true)
 
         ;
 
