@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.backend.travel.dao.CustomizedtravelMapper">
+
+    <resultMap id="BaseResultMap" type="com.backend.travel.POJO.entity.Customizedtravel">
+            <id property="customizedTravelId" column="customizedTravelId" jdbcType="BIGINT"/>
+            <result property="travelTypeId" column="travelTypeId" jdbcType="BIGINT"/>
+            <result property="travelCityId" column="travelCityId" jdbcType="BIGINT"/>
+            <result property="travelBeginTime" column="travelBeginTime" jdbcType="TIMESTAMP"/>
+            <result property="travelEndTime" column="travelEndTime" jdbcType="TIMESTAMP"/>
+            <result property="travelNumbers" column="travelNumbers" jdbcType="INTEGER"/>
+            <result property="travelEstimation" column="travelEstimation" jdbcType="DECIMAL"/>
+            <result property="travelMoney" column="travelMoney" jdbcType="DECIMAL"/>
+            <result property="travelGuideNums" column="travelGuideNums" jdbcType="INTEGER"/>
+            <result property="travelDescription" column="travelDescription" jdbcType="VARCHAR"/>
+            <result property="travelUserName" column="travelUserName" jdbcType="VARCHAR"/>
+            <result property="travelUserPhoneNum" column="travelUserPhoneNum" jdbcType="VARCHAR"/>
+        <result property="accountId" column="accountId" jdbcType="BIGINT"/>
+        <result property="travelStatus" column="travelStatus" jdbcType="INTEGER"/>
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        customizedTravelId,travelTypeId,travelCityId,
+        travelBeginTime,travelEndTime,travelNumbers,
+        travelEstimation,travelMoney,travelGuideNums,
+        travelDescription,travelUserName,travelUserPhoneNum,accountId,travelStatus
+    </sql>
+</mapper>
